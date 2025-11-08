@@ -22,7 +22,7 @@ import ChatLayout from "./ChatLayout";
 import { createSocket } from "@/app/services/WebSocketService";
 
 // const WS_URL = "wss://demo.piesocket.com/v3/channel_123?api_key=demo&notify_self=1";
-const WS_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "";
+const WS_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL as string;
 export default function ChatPage() {
   const [username, setUsername] = useState("");
   const [isJoined, setIsJoined] = useState(false);

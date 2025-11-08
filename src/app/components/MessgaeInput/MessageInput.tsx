@@ -8,7 +8,7 @@ import {
   SendButton,
 } from "./MessageListStyle";
 import { createSocket, getSocket } from "@/app/services/WebSocketService";
-const WS_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "";
+const WS_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL as string;
 export default function MessageInput() {
   const [userDetails, setUserDeatils] = useState<
     { user: string; text: string; time: string }[]
