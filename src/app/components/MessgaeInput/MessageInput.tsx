@@ -8,29 +8,43 @@ import {
   SendButton,
 } from "./MessageListStyle";
 import { createSocket, getSocket } from "@/app/services/WebSocketService";
+
+interface MessageInputProps {
+  messages: {
+    user?: string;
+    text?: string;
+    time: string;
+    type: string;
+  }[];
+  username: string;
+}
+
 const WS_URL =
   (process.env.NEXT_PUBLIC_WEBSOCKET_URL as string) ||
   "wss://chat-application-be-okes.onrender.com";
-export default function MessageInput() {
+export default function MessageInput({
+  messages,
+  username,
+}: MessageInputProps) {
   const [userDetails, setUserDeatils] = useState<
     { user: string; text: string; time: string }[]
   >([]);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const socket = getSocket();
+  // useEffect(() => {
+  //   const socket = getSocket();
 
-    if (!socket) {
-      console.log("No socket found, user did not join yet");
-      return;
-    }
+  //   if (!socket) {
+  //     console.log("No socket found, user did not join yet");
+  //     return;
+  //   }
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Received:", data);
-      setUserDeatils((prev) => [...prev, data]);
-    };
-  }, []);
+  //   socket.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log("Received:", data);
+  //     setUserDeatils((prev) => [...prev, data]);
+  //   };
+  // }, []);
   const sendMessage = () => {
     console.log("Hello");
     const socket = createSocket(WS_URL);
@@ -38,7 +52,7 @@ export default function MessageInput() {
     socket.send(
       JSON.stringify({
         type: "message",
-        user: userDetails[0]?.user,
+        user: username,
         text: message,
         time: new Date().toLocaleTimeString(),
       })

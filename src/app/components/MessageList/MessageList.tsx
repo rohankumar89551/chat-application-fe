@@ -15,45 +15,54 @@ import {
 } from "./MessgaeListStyle";
 import { getSocket } from "@/app/services/WebSocketService";
 
-export default function MessageList() {
+interface MessageListProps {
+  messages: {
+    user?: string;
+    text?: string;
+    time: string;
+    type: string;
+  }[];
+  username: string;
+}
+export default function MessageList({ messages, username }: MessageListProps) {
   const [user, setUser] = useState();
-  const [messages, setMessages] = useState<
-    { user: string; text: string; time: string }[]
-  >([]);
-  useEffect(() => {
-    const socket = getSocket();
-    const saved = sessionStorage.getItem("chatUser");
+  // const [messages, setMessages] = useState<
+  //   { user: string; text: string; time: string }[]
+  // >([]);
+  // useEffect(() => {
+  //   const socket = getSocket();
+  //   const saved = sessionStorage.getItem("chatUser");
 
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setUser(parsed.username);
-    }
+  //   if (saved) {
+  //     const parsed = JSON.parse(saved);
+  //     setUser(parsed.username);
+  //   }
 
-    if (!socket) {
-      console.log("No socket found, user did not join yet");
-      return;
-    }
+  //   if (!socket) {
+  //     console.log("No socket found, user did not join yet");
+  //     return;
+  //   }
 
-    // ✅ use addEventListener (so we don't override other components)
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-      console.log("ChatPage Received:", data);
-      setMessages((prev) => [...prev, data]);
-    };
+  //   // ✅ use addEventListener (so we don't override other components)
+  //   const handleMessage = (event: MessageEvent) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log("ChatPage Received:", data);
+  //     setMessages((prev) => [...prev, data]);
+  //   };
 
-    socket.addEventListener("message", handleMessage);
+  //   socket.addEventListener("message", handleMessage);
 
-    // ✅ cleanup
-    return () => {
-      socket.removeEventListener("message", handleMessage);
-    };
-  }, []);
+  //   // ✅ cleanup
+  //   return () => {
+  //     socket.removeEventListener("message", handleMessage);
+  //   };
+  // }, []);
 
-  console.log("userzzzzzz", user, messages);
+  console.log("userzzzzzz", username, messages);
   return (
     <MessagesWrapper>
       {messages.map((msg, index) => {
-        const isMe = msg.user === user;
+        const isMe = msg.user === username;
         return (
           <MessageRow key={index} isMe={isMe}>
             {/* Avatar */}

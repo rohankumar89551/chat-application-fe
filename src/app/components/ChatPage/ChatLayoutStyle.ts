@@ -6,5 +6,4 @@ export const ChatContainer = styled("div")(() => ({
   justifyContent: "space-between",
   height: "100vh",
   backgroundColor: "#f8f9fb",
-  border: "2px solid red",
 }));

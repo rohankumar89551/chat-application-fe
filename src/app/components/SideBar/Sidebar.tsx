@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   SidebarWrapper,
   SidebarHeader,
@@ -9,48 +8,26 @@ import {
   ChatItem,
   AvatarImg,
 } from "./SideBarStyle";
-import { getSocket } from "@/app/services/WebSocketService";
 
-export default function Sidebar() {
-  const [user, setUser] = useState("");
-  const [messages, setMessages] = useState<
-    { user: string; text?: string; time: string; type: string }[]
-  >([]);
-  const [users, setUsers] = useState<string[]>([]);
+interface SideBarProps {
+  messages: {
+    user?: string;
+    text?: string;
+    time: string;
+    type: string;
+  }[];
+  username: string;
+}
 
-  useEffect(() => {
-    const socket = getSocket();
-    const saved = sessionStorage.getItem("chatUser");
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setUser(parsed.username);
-    }
-
-    if (!socket) return;
-
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-      console.log("Sidebar Received:", data);
-
-      // ✅ Save message
-      setMessages((prev) => [...prev, data]);
-
-      // ✅ Save user (joined OR messaged)
-      setUsers((prevUsers) => {
-        if (!prevUsers.includes(data.user)) {
-          return [...prevUsers, data.user];
-        }
-        return prevUsers;
-      });
-    };
-
-    socket.addEventListener("message", handleMessage);
-
-    return () => {
-      socket.removeEventListener("message", handleMessage);
-    };
-  }, []);
+export default function Sidebar({ messages, username }: SideBarProps) {
+  // ✅ Extract unique users from join events
+  const users = Array.from(
+    new Set(
+      messages
+        .filter((msg) => msg.type === "join" && msg.user)
+        .map((msg) => msg.user)
+    )
+  );
 
   return (
     <SidebarWrapper>
@@ -61,22 +38,29 @@ export default function Sidebar() {
       </div>
 
       <ChatsList>
-        {users.map((u, index) => (
-          <ChatItem key={index}>
-            <AvatarImg src={`https://i.pravatar.cc/40?u=${u}`} />
+        {users.map((u, index) => {
+          // ✅ Find last activity of the user
+          const lastActivity = messages
+            .filter((m) => m.user === u)
+            .at(-1)?.time;
 
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: "bold" }}>{u}</div>
-              <div style={{ color: "#666", fontSize: "12px" }}>
-                {u === user ? "You joined" : `${u} joined`}
+          return (
+            <ChatItem key={index}>
+              <AvatarImg src={`https://i.pravatar.cc/40?u=${u}`} />
+
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: "bold" }}>{u}</div>
+                <div style={{ color: "#666", fontSize: "12px" }}>
+                  {u === username ? "You joined" : `${u} joined`}
+                </div>
               </div>
-            </div>
 
-            <div style={{ fontSize: "12px", color: "#666" }}>
-              {messages.find((m) => m.user === u)?.time || ""}
-            </div>
-          </ChatItem>
-        ))}
+              <div style={{ fontSize: "12px", color: "#666" }}>
+                {lastActivity || ""}
+              </div>
+            </ChatItem>
+          );
+        })}
       </ChatsList>
     </SidebarWrapper>
   );

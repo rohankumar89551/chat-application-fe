@@ -6,14 +6,23 @@ import MessageInput from "../MessgaeInput/MessageInput";
 import Sidebar from "../SideBar/Sidebar";
 import { ChatContainer } from "./ChatLayoutStyle";
 
-export default function ChatLayout() {
+interface ChatLayoutProps {
+  messages: {
+    user?: string;
+    text?: string;
+    time: string;
+    type: string;
+  }[];
+  username: string;
+}
+export default function ChatLayout({ messages, username }: ChatLayoutProps) {
   return (
     <ChatContainer>
-      <Sidebar />
+      <Sidebar messages={messages} username={username} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <ChatHeader />
-        <MessageList />
-        <MessageInput />
+        <ChatHeader messages={messages} username={username} />
+        <MessageList messages={messages} username={username} />
+        <MessageInput messages={messages} username={username} />
       </div>
     </ChatContainer>
   );

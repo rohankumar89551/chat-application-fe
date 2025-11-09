@@ -97,9 +97,11 @@ export default function ChatPage() {
         <JoinButton onClick={joinChat}>Join Chat →</JoinButton>
       </JoinCard>
     </JoinWrapper>
-  ) : (
+  ) : messages.length > 0 ? (
     <ChatWrapper>
       <ChatLayout messages={messages} username={username} />
     </ChatWrapper>
+  ) : (
+    ""
   );
 }
